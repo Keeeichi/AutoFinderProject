@@ -1,13 +1,18 @@
 import { Platform } from "react-native";
 
-const envUrl = process.env.EXPO_PUBLIC_API_URL;
+const envUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
 
 export function getApiBaseUrl(): string {
   if (envUrl) return envUrl.replace(/\/$/, "");
-  if (__DEV__) {
-    if (Platform.OS === "android") return "http://10.0.2.2:3000";
-    return "http://localhost:3000";
+
+  if (!envUrl && !__DEV__) {
+    console.warn(
+      "[AutoFinder] Задайте EXPO_PUBLIC_API_URL (URL API на Railway) и пересоберите приложение."
+    );
+    return "https://missing-expo-public-api-url.localhost";
   }
+
+  if (Platform.OS === "android") return "http://10.0.2.2:3000";
   return "http://localhost:3000";
 }
 

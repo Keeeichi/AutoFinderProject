@@ -61,6 +61,13 @@ react {
 
     /* Autolinking */
     autolinkLibrariesWithApp()
+
+    /*
+     * По умолчанию variant "debug" не упаковывает JS — приложение тянет бандл с Metro.
+     * Пустой список = вшить бандл в debug APK (удобно для установки с телефона без ПК).
+     * Для ежедневной разработки с Fast Refresh закомментируйте следующую строку.
+     */
+    debuggableVariants = []
 }
 
 /**
