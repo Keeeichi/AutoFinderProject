@@ -10,7 +10,11 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
-import { apiGet } from "../api/client";
+import {
+  apiGet,
+  hasRemoteApiUrl,
+  isStandaloneAppWithoutApiEnv,
+} from "../api/client";
 import type { AggregatedRow, StatsResponse } from "../types/api";
 import { colors, fonts, radii, spacing } from "../theme";
 import type { RootStackParamList } from "../navigation/types";
@@ -70,7 +74,11 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.warnTitle}>API недоступен</Text>
             <Text style={styles.warnText}>{err}</Text>
             <Text style={styles.warnHint}>
-              Запустите сервер: npm run server и проверьте PostgreSQL.
+              {isStandaloneAppWithoutApiEnv()
+                ? "В корне проекта создайте файл .env с строкой EXPO_PUBLIC_API_URL=https://ваш-проект.up.railway.app (без слэша в конце), затем заново соберите APK (npm run android:apk:debug)."
+                : hasRemoteApiUrl()
+                  ? "Проверьте, что API на Railway запущен и открывается в браузере по этому же адресу (/health)."
+                  : "Для Expo на телефоне: в .env укажите EXPO_PUBLIC_API_URL на Railway или запустите API на ПК (npm run server) в той же Wi‑Fi сети. Для эмулятора достаточно локального сервера."}
             </Text>
           </View>
         ) : null}
