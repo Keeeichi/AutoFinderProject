@@ -5,6 +5,7 @@ web-build/
 *.log
 .env
 .env.local
+.env.docker
 server/.env
 .DS_Store
 

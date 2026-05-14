@@ -30,6 +30,14 @@ function metroLanHost(): string | null {
 export function getApiBaseUrl(): string {
   if (envUrl) return envUrl.replace(/\/$/, "");
 
+  if (
+    Platform.OS === "web" &&
+    typeof window !== "undefined" &&
+    process.env.NODE_ENV === "production"
+  ) {
+    return "";
+  }
+
   const lan = metroLanHost();
   if (lan) {
     return `http://${lan}:3000`;
