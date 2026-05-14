@@ -5,6 +5,7 @@ import { Platform, Pressable, StyleSheet } from "react-native";
 import AggregatedScreen from "../screens/AggregatedScreen";
 import CatalogScreen from "../screens/CatalogScreen";
 import HomeScreen from "../screens/HomeScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 import QueueScreen from "../screens/QueueScreen";
 import { colors, fonts } from "../theme";
 import type { MainTabParamList } from "./types";
@@ -86,6 +87,17 @@ export default function MainTabs() {
           tabBarLabel: "Очередь",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="flash" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          title: "Профиль",
+          tabBarLabel: "Профиль",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle-outline" color={color} size={size} />
           ),
         }}
       />

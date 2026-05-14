@@ -6,9 +6,12 @@ export type MainTabParamList = {
   Market: undefined;
   Garage: undefined;
   Automation: undefined;
+  Profile: undefined;
 };
 
 export type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
   Main: undefined;
   VehicleDetail: { scope: "aggregated" | "listing"; id: string };
   CreateListing: undefined;

@@ -56,3 +56,18 @@ export type CreateListingResponse = {
   id: string;
   status: string;
 };
+
+export type UserRole = "admin" | "moderator" | "user";
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  phone: string | null;
+  role: UserRole;
+};
+
+export type LoginResponse = {
+  accessToken: string;
+  user: AuthUser;
+};

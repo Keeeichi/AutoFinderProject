@@ -21,8 +21,8 @@ export async function seedDemoIfNeeded(): Promise<void> {
     userId = existing.rows[0].id;
   } else {
     const ins = await pool.query<{ id: string }>(
-      `INSERT INTO users (email, password_hash, full_name, phone)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO users (email, password_hash, full_name, phone, role)
+       VALUES ($1, $2, $3, $4, 'user')
        RETURNING id`,
       [email, hash, "Демо дилер", "+79990000000"]
     );

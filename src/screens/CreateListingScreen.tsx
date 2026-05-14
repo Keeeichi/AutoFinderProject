@@ -104,8 +104,8 @@ export default function CreateListingScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.hint}>
-          Карточка привязывается к демо-аккаунту на сервере. Фото — прямые HTTPS-ссылки
-          (по одной в строке или через запятую).
+          Объявление привязывается к вашему аккаунту. Фото — прямые HTTPS-ссылки (по одной в
+          строке или через запятую).
         </Text>
         <Field label="Заголовок" value={title} onChangeText={setTitle} ph="Напр. BMW 320i, один владелец" />
         <Row>

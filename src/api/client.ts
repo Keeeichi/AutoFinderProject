@@ -1,5 +1,6 @@
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import { Platform } from "react-native";
+import { getStoredAccessToken } from "../auth/tokenBridge";
 
 const envUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
 
@@ -47,32 +48,77 @@ export function getApiBaseUrl(): string {
   return "http://localhost:3000";
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
+type AuthOption = { auth?: boolean };
+
+async function buildHeaders(
+  jsonBody: boolean,
+  opts?: AuthOption
+): Promise<Record<string, string>> {
+  const headers: Record<string, string> = {};
+  if (jsonBody) headers["Content-Type"] = "application/json";
+  if (opts?.auth !== false) {
+    const t = await getStoredAccessToken();
+    if (t) headers.Authorization = `Bearer ${t}`;
+  }
+  return headers;
+}
+
+async function parseError(res: Response, text: string): Promise<never> {
+  try {
+    const j = JSON.parse(text) as { message?: string };
+    throw new Error(j.message || text || res.statusText);
+  } catch (err) {
+    if (err instanceof SyntaxError) throw new Error(text || res.statusText);
+    throw err;
+  }
+}
+
+export async function apiGet<T>(path: string, opts?: AuthOption): Promise<T> {
   const base = getApiBaseUrl();
-  const res = await fetch(`${base}${path}`);
+  const headers = await buildHeaders(false, opts);
+  const res = await fetch(`${base}${path}`, { headers });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(text || res.statusText);
+    await parseError(res, text);
   }
   return res.json() as Promise<T>;
 }
 
-export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+export async function apiPost<T>(
+  path: string,
+  body: unknown,
+  opts?: AuthOption
+): Promise<T> {
   const base = getApiBaseUrl();
+  const headers = await buildHeaders(true, opts);
   const res = await fetch(`${base}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(body),
   });
   const text = await res.text();
   if (!res.ok) {
-    try {
-      const j = JSON.parse(text) as { message?: string };
-      throw new Error(j.message || text || res.statusText);
-    } catch (err) {
-      if (err instanceof SyntaxError) throw new Error(text || res.statusText);
-      throw err;
-    }
+    await parseError(res, text);
+  }
+  if (!text) return {} as T;
+  return JSON.parse(text) as T;
+}
+
+export async function apiPatch<T>(
+  path: string,
+  body: unknown,
+  opts?: AuthOption
+): Promise<T> {
+  const base = getApiBaseUrl();
+  const headers = await buildHeaders(true, opts);
+  const res = await fetch(`${base}${path}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    await parseError(res, text);
   }
   if (!text) return {} as T;
   return JSON.parse(text) as T;

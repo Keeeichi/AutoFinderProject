@@ -1,26 +1,13 @@
-import type { Express } from "express";
+import type { Express, RequestHandler } from "express";
 import type { Pool } from "pg";
 
-const DEMO_EMAIL = "demo@autofinder.local";
-
-async function getDemoUserId(pool: Pool): Promise<string | null> {
-  const { rows } = await pool.query<{ id: string }>(
-    "SELECT id FROM users WHERE email = $1 LIMIT 1",
-    [DEMO_EMAIL]
-  );
-  return rows[0]?.id ?? null;
-}
-
-export function registerListingWriteRoutes(app: Express, pool: Pool): void {
-  app.post("/api/listings", async (req, res) => {
-    const userId = await getDemoUserId(pool);
-    if (!userId) {
-      res.status(503).json({
-        error: "demo_user_missing",
-        message: "Нет демо-пользователя. Включите AUTO_SEED_DEMO=1 и перезапустите сервер.",
-      });
-      return;
-    }
+export function registerProtectedListingRoutes(
+  app: Express,
+  pool: Pool,
+  requireAuth: RequestHandler
+): void {
+  app.post("/api/listings", requireAuth, async (req, res) => {
+    const userId = req.auth!.userId;
 
     const b = req.body as Record<string, unknown>;
     const title = String(b.title ?? "").trim();
@@ -108,7 +95,11 @@ export function registerListingWriteRoutes(app: Express, pool: Pool): void {
     }
   });
 
-  app.get("/api/queue/jobs", async (_req, res) => {
+  app.get("/api/queue/jobs", requireAuth, async (req, res) => {
+    const role = req.auth!.role;
+    const userId = req.auth!.userId;
+    const isStaff = role === "admin" || role === "moderator";
+
     const { rows } = await pool.query(
       `SELECT pq.id, pq.status, pq.scheduled_at, pq.attempts, pq.last_error,
               p.name AS platform_name, p.code AS platform_code,
@@ -116,8 +107,10 @@ export function registerListingWriteRoutes(app: Express, pool: Pool): void {
        FROM publication_queue pq
        JOIN platforms p ON p.id = pq.platform_id
        JOIN listings l ON l.id = pq.listing_id
+       WHERE ($1::boolean OR l.user_id = $2::uuid)
        ORDER BY pq.scheduled_at DESC
-       LIMIT 100`
+       LIMIT 100`,
+      [isStaff, userId]
     );
     res.json(rows);
   });

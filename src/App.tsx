@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useAppFonts } from "./fonts";
+import { AuthProvider } from "./auth/AuthContext";
 import RootNavigator from "./navigation/RootNavigator";
 import { colors } from "./theme";
 
@@ -36,10 +37,12 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle="light-content" />
-      <NavigationContainer theme={navTheme}>
-        <RootNavigator />
-      </NavigationContainer>
+      <AuthProvider>
+        <StatusBar barStyle="light-content" />
+        <NavigationContainer theme={navTheme}>
+          <RootNavigator />
+        </NavigationContainer>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
