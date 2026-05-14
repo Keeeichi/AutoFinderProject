@@ -1,6 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import { ensureJwtSecretConfigured } from "./auth/jwt.js";
 import { registerAuthRoutes } from "./auth/routes.js";
 import { requireAuth } from "./auth/middleware.js";
 import { registerProtectedListingRoutes } from "./listingsHandlers.js";
@@ -126,6 +127,7 @@ registerProtectedListingRoutes(app, pool, requireAuth);
 const port = Number(process.env.PORT ?? 3000);
 
 async function main() {
+  ensureJwtSecretConfigured();
   await runMigrations(pool);
   await seedDemoIfNeeded();
   app.listen(port, () => {

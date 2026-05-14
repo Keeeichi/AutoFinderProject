@@ -1,8 +1,20 @@
 import jwt from "jsonwebtoken";
 import type { UserRole } from "./types.js";
 
+/** Вызовите в `main()` до `app.listen`, чтобы не падать на `/api/auth/*` с 502. */
+export function ensureJwtSecretConfigured(): void {
+  const s = process.env.JWT_SECRET?.trim();
+  if (s) return;
+  console.error(
+    "[AutoFinder] JWT_SECRET is not set.\n" +
+      "Add a long random string (32+ chars) as env JWT_SECRET.\n" +
+      "Railway: your API service → Variables → JWT_SECRET → Generate / paste."
+  );
+  process.exit(1);
+}
+
 function secret(): string {
-  const s = process.env.JWT_SECRET;
+  const s = process.env.JWT_SECRET?.trim();
   if (!s) throw new Error("JWT_SECRET is not set");
   return s;
 }
