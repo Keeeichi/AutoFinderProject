@@ -9,14 +9,15 @@ import {
   Text,
   View,
 } from "react-native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { CommonActions } from "@react-navigation/native";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { apiGet } from "../api/client";
-import type { RootStackParamList } from "../navigation/types";
+import type { MainTabParamList } from "../navigation/types";
 import type { AggregatedRow } from "../types/api";
 import { colors, fonts, radii, spacing } from "../theme";
 import { formatKm, formatRub } from "../utils/format";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Aggregated">;
+type Props = BottomTabScreenProps<MainTabParamList, "Market">;
 
 export default function AggregatedScreen({ navigation }: Props) {
   const [items, setItems] = useState<AggregatedRow[]>([]);
@@ -76,10 +77,12 @@ export default function AggregatedScreen({ navigation }: Props) {
         return (
           <Pressable
             onPress={() =>
-              navigation.navigate("VehicleDetail", {
-                scope: "aggregated",
-                id: item.id,
-              })
+              navigation.getParent()?.dispatch(
+                CommonActions.navigate({
+                  name: "VehicleDetail",
+                  params: { scope: "aggregated", id: item.id },
+                })
+              )
             }
             style={({ pressed }) => [styles.card, pressed && { opacity: 0.92 }]}
           >

@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import { CommonActions } from "@react-navigation/native";
 import {
   ImageBackground,
   Pressable,
@@ -8,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useEffect, useState } from "react";
 import {
   apiGet,
@@ -17,9 +18,28 @@ import {
 } from "../api/client";
 import type { AggregatedRow, StatsResponse } from "../types/api";
 import { colors, fonts, radii, spacing } from "../theme";
-import type { RootStackParamList } from "../navigation/types";
+import type { MainTabParamList } from "../navigation/types";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Home">;
+type Props = BottomTabScreenProps<MainTabParamList, "Home">;
+
+function goVehicle(
+  navigation: Props["navigation"],
+  scope: "aggregated" | "listing",
+  id: string
+) {
+  navigation
+    .getParent()
+    ?.dispatch(
+      CommonActions.navigate({
+        name: "VehicleDetail",
+        params: { scope, id },
+      })
+    );
+}
+
+function goModal(navigation: Props["navigation"], name: "Platforms" | "CreateListing") {
+  navigation.getParent()?.dispatch(CommonActions.navigate({ name }));
+}
 
 export default function HomeScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
@@ -99,19 +119,24 @@ export default function HomeScreen({ navigation }: Props) {
         <Text style={styles.sectionTitle}>Быстрые действия</Text>
         <View style={styles.tiles}>
           <Tile
-            title="Агрегатор"
-            caption="Сводка с площадок"
-            onPress={() => navigation.navigate("Aggregated")}
+            title="Рынок"
+            caption="Вкладка «Рынок»"
+            onPress={() => navigation.navigate("Market")}
           />
           <Tile
-            title="Каталог"
-            caption="Ваши карточки"
-            onPress={() => navigation.navigate("Catalog")}
+            title="Гараж"
+            caption="Ваши объявления"
+            onPress={() => navigation.navigate("Garage")}
+          />
+          <Tile
+            title="Новое объявление"
+            caption="Создать и в очередь"
+            onPress={() => goModal(navigation, "CreateListing")}
           />
           <Tile
             title="Площадки"
             caption="Куда публикуем"
-            onPress={() => navigation.navigate("Platforms")}
+            onPress={() => goModal(navigation, "Platforms")}
           />
         </View>
       </View>
@@ -129,10 +154,7 @@ export default function HomeScreen({ navigation }: Props) {
               <Pressable
                 key={item.id}
                 onPress={() =>
-                  navigation.navigate("VehicleDetail", {
-                    scope: "aggregated",
-                    id: item.id,
-                  })
+                  goVehicle(navigation, "aggregated", item.id)
                 }
                 style={styles.miniCard}
               >

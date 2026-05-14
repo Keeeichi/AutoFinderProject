@@ -56,3 +56,24 @@ export async function apiGet<T>(path: string): Promise<T> {
   }
   return res.json() as Promise<T>;
 }
+
+export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+  const base = getApiBaseUrl();
+  const res = await fetch(`${base}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    try {
+      const j = JSON.parse(text) as { message?: string };
+      throw new Error(j.message || text || res.statusText);
+    } catch (err) {
+      if (err instanceof SyntaxError) throw new Error(text || res.statusText);
+      throw err;
+    }
+  }
+  if (!text) return {} as T;
+  return JSON.parse(text) as T;
+}

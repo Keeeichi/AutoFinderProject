@@ -1,12 +1,18 @@
 import type { NavigatorScreenParams } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-export type RootStackParamList = {
+export type MainTabParamList = {
   Home: undefined;
-  Aggregated: undefined;
-  Catalog: undefined;
-  Platforms: undefined;
+  Market: undefined;
+  Garage: undefined;
+  Automation: undefined;
+};
+
+export type RootStackParamList = {
+  Main: undefined;
   VehicleDetail: { scope: "aggregated" | "listing"; id: string };
+  CreateListing: undefined;
+  Platforms: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

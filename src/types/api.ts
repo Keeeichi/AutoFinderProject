@@ -38,3 +38,21 @@ export type PlatformRow = {
   base_url: string | null;
   is_active: boolean;
 };
+
+export type QueueJobRow = {
+  id: string;
+  status: string;
+  scheduled_at: string;
+  attempts: number;
+  last_error: string | null;
+  platform_name: string;
+  platform_code: string;
+  listing_id: string;
+  listing_title: string;
+  price_rub: string | number;
+};
+
+export type CreateListingResponse = {
+  id: string;
+  status: string;
+};

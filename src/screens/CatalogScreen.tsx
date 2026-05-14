@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -9,14 +9,15 @@ import {
   Text,
   View,
 } from "react-native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { CommonActions, useFocusEffect } from "@react-navigation/native";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { apiGet } from "../api/client";
-import type { RootStackParamList } from "../navigation/types";
+import type { MainTabParamList } from "../navigation/types";
 import type { ListingRow } from "../types/api";
 import { colors, fonts, radii, spacing } from "../theme";
 import { formatKm, formatRub } from "../utils/format";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Catalog">;
+type Props = BottomTabScreenProps<MainTabParamList, "Garage">;
 
 export default function CatalogScreen({ navigation }: Props) {
   const [items, setItems] = useState<ListingRow[]>([]);
@@ -28,19 +29,21 @@ export default function CatalogScreen({ navigation }: Props) {
     setItems(data);
   }, []);
 
-  useEffect(() => {
-    let m = true;
-    (async () => {
-      try {
-        await load();
-      } finally {
-        if (m) setLoading(false);
-      }
-    })();
-    return () => {
-      m = false;
-    };
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
+      (async () => {
+        try {
+          await load();
+        } finally {
+          if (alive) setLoading(false);
+        }
+      })();
+      return () => {
+        alive = false;
+      };
+    }, [load])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -79,10 +82,12 @@ export default function CatalogScreen({ navigation }: Props) {
         return (
           <Pressable
             onPress={() =>
-              navigation.navigate("VehicleDetail", {
-                scope: "listing",
-                id: item.id,
-              })
+              navigation.getParent()?.dispatch(
+                CommonActions.navigate({
+                  name: "VehicleDetail",
+                  params: { scope: "listing", id: item.id },
+                })
+              )
             }
             style={({ pressed }) => [styles.card, pressed && { opacity: 0.92 }]}
           >

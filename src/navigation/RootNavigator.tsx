@@ -1,9 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Pressable, StyleSheet, Text } from "react-native";
-import AggregatedScreen from "../screens/AggregatedScreen";
-import CatalogScreen from "../screens/CatalogScreen";
-import HomeScreen from "../screens/HomeScreen";
+import CreateListingScreen from "../screens/CreateListingScreen";
+import MainTabs from "./MainTabs";
 import PlatformsScreen from "../screens/PlatformsScreen";
 import VehicleDetailScreen from "../screens/VehicleDetailScreen";
 import { colors, fonts } from "../theme";
@@ -33,35 +32,27 @@ export default function RootNavigator() {
       }}
     >
       <Stack.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Main"
+        component={MainTabs}
         options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Aggregated"
-        component={AggregatedScreen}
-        options={({ navigation }) => ({
-          title: "Агрегатор рынка",
-          headerLeft: () => (
-            <HeaderBack onPress={() => navigation.goBack()} />
-          ),
-        })}
-      />
-      <Stack.Screen
-        name="Catalog"
-        component={CatalogScreen}
-        options={({ navigation }) => ({
-          title: "Мои объявления",
-          headerLeft: () => (
-            <HeaderBack onPress={() => navigation.goBack()} />
-          ),
-        })}
       />
       <Stack.Screen
         name="Platforms"
         component={PlatformsScreen}
         options={({ navigation }) => ({
           title: "Площадки размещения",
+          presentation: "modal",
+          headerLeft: () => (
+            <HeaderBack onPress={() => navigation.goBack()} />
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="CreateListing"
+        component={CreateListingScreen}
+        options={({ navigation }) => ({
+          title: "Новое объявление",
+          presentation: "modal",
           headerLeft: () => (
             <HeaderBack onPress={() => navigation.goBack()} />
           ),

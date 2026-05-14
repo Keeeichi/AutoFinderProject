@@ -1,6 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import { registerListingWriteRoutes } from "./listingsHandlers.js";
 import { pool } from "./db/pool.js";
 import { runMigrations } from "./db/runMigrations.js";
 import { seedDemoIfNeeded } from "./seedDemo.js";
@@ -116,6 +117,8 @@ app.get("/api/queue/summary", async (_req, res) => {
   );
   res.json(rows);
 });
+
+registerListingWriteRoutes(app, pool);
 
 const port = Number(process.env.PORT ?? 3000);
 
