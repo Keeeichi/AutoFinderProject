@@ -9,8 +9,15 @@
     "server": "npm run dev --prefix server",
     "lint": "expo lint",
     "build:web": "expo export --platform web",
-    "build:apk": "eas build -p android --profile preview-apk",
-    "build": "npm run build:web && npm run build:apk"
+    "android:prebuild": "expo prebuild --platform android",
+    "android:apk:debug": "cd android && gradlew.bat assembleDebug",
+    "android:apk:release": "cd android && gradlew.bat assembleRelease",
+    "build:apk:local": "npm run android:apk:debug",
+    "build:apk:eas": "eas build -p android --profile preview-apk",
+    "build:apk": "npm run build:apk:local",
+    "build": "npm run build:web && npm run build:apk:local",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.4.2",

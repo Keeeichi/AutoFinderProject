@@ -10,7 +10,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0B0F14"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.autofinder.app"
@@ -22,6 +24,13 @@
       "bundler": "metro",
       "output": "single"
     },
-    "plugins": ["expo-font"]
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ef483890-a6ca-4362-bf55-d255e54352d6"
+      }
+    }
   }
 }
